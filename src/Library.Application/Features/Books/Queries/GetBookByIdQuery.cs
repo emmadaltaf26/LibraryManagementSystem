@@ -5,7 +5,10 @@ using MediatR;
 
 namespace Library.Application.Features.Books.Queries;
 
-public record GetBookByIdQuery(Guid Id) : IRequest<BookDto?>;
+public class GetBookByIdQuery : IRequest<BookDto?>
+{
+    public Guid Id { get; set; }
+}
 
 public class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery, BookDto?>
 {

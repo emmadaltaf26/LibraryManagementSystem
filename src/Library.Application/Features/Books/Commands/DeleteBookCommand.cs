@@ -3,7 +3,10 @@ using MediatR;
 
 namespace Library.Application.Features.Books.Commands;
 
-public record DeleteBookCommand(Guid Id) : IRequest<bool>;
+public class DeleteBookCommand : IRequest<bool>
+{
+    public Guid Id { get; set; }
+}
 
 public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, bool>
 {
@@ -20,7 +23,6 @@ public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, bool>
         if (book == null)
             return false;
 
-        // Check if book has active loans
         var activeLoans = await _unitOfWork.Loans.FindAsync(
             l => l.BookId == request.Id && l.Status == Domain.Enums.LoanStatus.Active,
             cancellationToken);

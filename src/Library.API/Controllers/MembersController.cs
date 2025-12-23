@@ -1,4 +1,3 @@
-using Library.Application.DTOs;
 using Library.Application.Features.Members.Commands;
 using Library.Application.Features.Members.Queries;
 using MediatR;
@@ -6,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers;
 
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class MembersController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -18,46 +17,48 @@ public class MembersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetAll()
+    public async Task<IActionResult> Get()
     {
-        var members = await _mediator.Send(new GetAllMembersQuery());
-        return Ok(members);
+        var response = await _mediator.Send(new GetAllMembersQuery());
+        return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<MemberDto>> GetById(Guid id)
+    [HttpGet]
+    [Route("{id}")]
+    public async Task<IActionResult> Get([FromRoute] Guid id)
     {
-        var member = await _mediator.Send(new GetMemberByIdQuery(id));
-        if (member == null)
-            return NotFound();
+        var response = await _mediator.Send(new GetMemberByIdQuery { Id = id });
+        if (response == null)
+            return NotFound(new { Message = "Member not found." });
 
-        return Ok(member);
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<MemberDto>> Create([FromBody] CreateMemberDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateMemberCommand command)
     {
-        var member = await _mediator.Send(new CreateMemberCommand(dto));
-        return CreatedAtAction(nameof(GetById), new { id = member.Id }, member);
+        var response = await _mediator.Send(command);
+        return Ok(response);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<MemberDto>> Update(Guid id, [FromBody] UpdateMemberDto dto)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateMemberCommand command)
     {
-        var member = await _mediator.Send(new UpdateMemberCommand(id, dto));
-        if (member == null)
-            return NotFound();
+        var response = await _mediator.Send(command);
+        if (response == null)
+            return NotFound(new { Message = "Member not found." });
 
-        return Ok(member);
+        return Ok(response);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete]
+    [Route("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var result = await _mediator.Send(new DeleteMemberCommand(id));
+        var result = await _mediator.Send(new DeleteMemberCommand { Id = id });
         if (!result)
-            return NotFound();
+            return NotFound(new { Message = "Member not found." });
 
-        return NoContent();
+        return Ok(new { Message = "Member deleted successfully." });
     }
 }

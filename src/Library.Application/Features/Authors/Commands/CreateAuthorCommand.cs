@@ -7,13 +7,18 @@ using MediatR;
 
 namespace Library.Application.Features.Authors.Commands;
 
-public record CreateAuthorCommand(CreateAuthorDto Author) : IRequest<AuthorDto>;
+public class CreateAuthorCommand : IRequest<AuthorDto>
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Biography { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+}
 
 public class CreateAuthorCommandValidator : AbstractValidator<CreateAuthorCommand>
 {
     public CreateAuthorCommandValidator()
     {
-        RuleFor(x => x.Author.Name)
+        RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Author name is required")
             .MaximumLength(200).WithMessage("Name cannot exceed 200 characters");
     }
@@ -32,9 +37,14 @@ public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, A
 
     public async Task<AuthorDto> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
     {
-        var author = _mapper.Map<Author>(request.Author);
-        author.Id = Guid.NewGuid();
-        author.CreatedAt = DateTime.UtcNow;
+        var author = new Author
+        {
+            Id = Guid.NewGuid(),
+            Name = request.Name,
+            Biography = request.Biography,
+            DateOfBirth = request.DateOfBirth,
+            CreatedAt = DateTime.UtcNow
+        };
 
         await _unitOfWork.Authors.AddAsync(author, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

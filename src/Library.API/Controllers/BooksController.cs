@@ -1,4 +1,3 @@
-using Library.Application.DTOs;
 using Library.Application.Features.Books.Commands;
 using Library.Application.Features.Books.Queries;
 using MediatR;
@@ -6,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers;
 
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class BooksController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -18,46 +17,48 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
+    public async Task<IActionResult> Get()
     {
-        var books = await _mediator.Send(new GetAllBooksQuery());
-        return Ok(books);
+        var response = await _mediator.Send(new GetAllBooksQuery());
+        return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<BookDto>> GetById(Guid id)
+    [HttpGet]
+    [Route("{id}")]
+    public async Task<IActionResult> Get([FromRoute] Guid id)
     {
-        var book = await _mediator.Send(new GetBookByIdQuery(id));
-        if (book == null)
-            return NotFound();
+        var response = await _mediator.Send(new GetBookByIdQuery { Id = id });
+        if (response == null)
+            return NotFound(new { Message = "Book not found." });
 
-        return Ok(book);
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<BookDto>> Create([FromBody] CreateBookDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateBookCommand command)
     {
-        var book = await _mediator.Send(new CreateBookCommand(dto));
-        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
+        var response = await _mediator.Send(command);
+        return Ok(response);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<BookDto>> Update(Guid id, [FromBody] UpdateBookDto dto)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateBookCommand command)
     {
-        var book = await _mediator.Send(new UpdateBookCommand(id, dto));
-        if (book == null)
-            return NotFound();
+        var response = await _mediator.Send(command);
+        if (response == null)
+            return NotFound(new { Message = "Book not found." });
 
-        return Ok(book);
+        return Ok(response);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete]
+    [Route("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var result = await _mediator.Send(new DeleteBookCommand(id));
+        var result = await _mediator.Send(new DeleteBookCommand { Id = id });
         if (!result)
-            return NotFound();
+            return NotFound(new { Message = "Book not found." });
 
-        return NoContent();
+        return Ok(new { Message = "Book deleted successfully." });
     }
 }

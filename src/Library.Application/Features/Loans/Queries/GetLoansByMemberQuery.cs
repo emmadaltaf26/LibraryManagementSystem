@@ -5,7 +5,10 @@ using MediatR;
 
 namespace Library.Application.Features.Loans.Queries;
 
-public record GetLoansByMemberQuery(Guid MemberId) : IRequest<IEnumerable<LoanDto>>;
+public class GetLoansByMemberQuery : IRequest<IEnumerable<LoanDto>>
+{
+    public Guid MemberId { get; set; }
+}
 
 public class GetLoansByMemberQueryHandler : IRequestHandler<GetLoansByMemberQuery, IEnumerable<LoanDto>>
 {

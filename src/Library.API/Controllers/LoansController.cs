@@ -1,4 +1,3 @@
-using Library.Application.DTOs;
 using Library.Application.Features.Loans.Commands;
 using Library.Application.Features.Loans.Queries;
 using MediatR;
@@ -6,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers;
 
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class LoansController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -18,50 +17,56 @@ public class LoansController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LoanDto>>> GetAll()
+    public async Task<IActionResult> Get()
     {
-        var loans = await _mediator.Send(new GetAllLoansQuery());
-        return Ok(loans);
+        var response = await _mediator.Send(new GetAllLoansQuery());
+        return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<LoanDto>> GetById(Guid id)
+    [HttpGet]
+    [Route("{id}")]
+    public async Task<IActionResult> Get([FromRoute] Guid id)
     {
-        var loan = await _mediator.Send(new GetLoanByIdQuery(id));
-        if (loan == null)
-            return NotFound();
+        var response = await _mediator.Send(new GetLoanByIdQuery { Id = id });
+        if (response == null)
+            return NotFound(new { Message = "Loan not found." });
 
-        return Ok(loan);
+        return Ok(response);
     }
 
-    [HttpGet("member/{memberId:guid}")]
-    public async Task<ActionResult<IEnumerable<LoanDto>>> GetByMember(Guid memberId)
+    [HttpGet]
+    [Route("member/{memberId}")]
+    public async Task<IActionResult> GetByMember([FromRoute] Guid memberId)
     {
-        var loans = await _mediator.Send(new GetLoansByMemberQuery(memberId));
-        return Ok(loans);
+        var response = await _mediator.Send(new GetLoansByMemberQuery { MemberId = memberId });
+        return Ok(response);
     }
 
-    [HttpGet("overdue")]
-    public async Task<ActionResult<IEnumerable<LoanDto>>> GetOverdue()
+    [HttpGet]
+    [Route("overdue")]
+    public async Task<IActionResult> GetOverdue()
     {
-        var loans = await _mediator.Send(new GetOverdueLoansQuery());
-        return Ok(loans);
+        var response = await _mediator.Send(new GetOverdueLoansQuery());
+        return Ok(response);
     }
 
-    [HttpPost("borrow")]
-    public async Task<ActionResult<LoanDto>> BorrowBook([FromBody] BorrowBookDto dto)
+    [HttpPost]
+    [Route("borrow")]
+    public async Task<IActionResult> BorrowBook([FromBody] BorrowBookCommand command)
     {
-        var loan = await _mediator.Send(new BorrowBookCommand(dto));
-        return CreatedAtAction(nameof(GetById), new { id = loan.Id }, loan);
+        var response = await _mediator.Send(command);
+        return Ok(response);
     }
 
-    [HttpPost("{id:guid}/return")]
-    public async Task<ActionResult<LoanDto>> ReturnBook(Guid id, [FromBody] ReturnBookDto? dto = null)
+    [HttpPost]
+    [Route("{id}/return")]
+    public async Task<IActionResult> ReturnBook([FromRoute] Guid id, [FromBody] ReturnBookCommand command)
     {
-        var loan = await _mediator.Send(new ReturnBookCommand(id, dto));
-        if (loan == null)
-            return NotFound();
+        command.LoanId = id;
+        var response = await _mediator.Send(command);
+        if (response == null)
+            return NotFound(new { Message = "Loan not found." });
 
-        return Ok(loan);
+        return Ok(response);
     }
 }

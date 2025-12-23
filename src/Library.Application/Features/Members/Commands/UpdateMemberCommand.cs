@@ -6,7 +6,16 @@ using MediatR;
 
 namespace Library.Application.Features.Members.Commands;
 
-public record UpdateMemberCommand(Guid Id, UpdateMemberDto Member) : IRequest<MemberDto?>;
+public class UpdateMemberCommand : IRequest<MemberDto?>
+{
+    public Guid Id { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? PhoneNumber { get; set; }
+    public string? Address { get; set; }
+    public bool IsActive { get; set; }
+}
 
 public class UpdateMemberCommandValidator : AbstractValidator<UpdateMemberCommand>
 {
@@ -15,15 +24,15 @@ public class UpdateMemberCommandValidator : AbstractValidator<UpdateMemberComman
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Member ID is required");
 
-        RuleFor(x => x.Member.FirstName)
+        RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("First name is required")
             .MaximumLength(100).WithMessage("First name cannot exceed 100 characters");
 
-        RuleFor(x => x.Member.LastName)
+        RuleFor(x => x.LastName)
             .NotEmpty().WithMessage("Last name is required")
             .MaximumLength(100).WithMessage("Last name cannot exceed 100 characters");
 
-        RuleFor(x => x.Member.Email)
+        RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required")
             .EmailAddress().WithMessage("Invalid email format");
     }
@@ -46,20 +55,19 @@ public class UpdateMemberCommandHandler : IRequestHandler<UpdateMemberCommand, M
         if (member == null)
             return null;
 
-        // Check for duplicate email (excluding current member)
         var existingMember = await _unitOfWork.Members.FindAsync(
-            m => m.Email.ToLower() == request.Member.Email.ToLower() && m.Id != request.Id,
+            m => m.Email.ToLower() == request.Email.ToLower() && m.Id != request.Id,
             cancellationToken);
 
         if (existingMember.Any())
             throw new InvalidOperationException("A member with this email already exists");
 
-        member.FirstName = request.Member.FirstName;
-        member.LastName = request.Member.LastName;
-        member.Email = request.Member.Email;
-        member.PhoneNumber = request.Member.PhoneNumber;
-        member.Address = request.Member.Address;
-        member.IsActive = request.Member.IsActive;
+        member.FirstName = request.FirstName;
+        member.LastName = request.LastName;
+        member.Email = request.Email;
+        member.PhoneNumber = request.PhoneNumber;
+        member.Address = request.Address;
+        member.IsActive = request.IsActive;
         member.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Members.UpdateAsync(member, cancellationToken);

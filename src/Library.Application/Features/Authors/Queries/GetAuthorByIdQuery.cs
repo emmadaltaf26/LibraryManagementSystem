@@ -5,7 +5,10 @@ using MediatR;
 
 namespace Library.Application.Features.Authors.Queries;
 
-public record GetAuthorByIdQuery(Guid Id) : IRequest<AuthorDto?>;
+public class GetAuthorByIdQuery : IRequest<AuthorDto?>
+{
+    public Guid Id { get; set; }
+}
 
 public class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, AuthorDto?>
 {

@@ -5,7 +5,10 @@ using MediatR;
 
 namespace Library.Application.Features.Genres.Queries;
 
-public record GetGenreByIdQuery(Guid Id) : IRequest<GenreDto?>;
+public class GetGenreByIdQuery : IRequest<GenreDto?>
+{
+    public Guid Id { get; set; }
+}
 
 public class GetGenreByIdQueryHandler : IRequestHandler<GetGenreByIdQuery, GenreDto?>
 {

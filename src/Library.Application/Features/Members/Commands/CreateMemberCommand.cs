@@ -7,28 +7,35 @@ using MediatR;
 
 namespace Library.Application.Features.Members.Commands;
 
-public record CreateMemberCommand(CreateMemberDto Member) : IRequest<MemberDto>;
+public class CreateMemberCommand : IRequest<MemberDto>
+{
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? PhoneNumber { get; set; }
+    public string? Address { get; set; }
+}
 
 public class CreateMemberCommandValidator : AbstractValidator<CreateMemberCommand>
 {
     public CreateMemberCommandValidator()
     {
-        RuleFor(x => x.Member.FirstName)
+        RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("First name is required")
             .MaximumLength(100).WithMessage("First name cannot exceed 100 characters");
 
-        RuleFor(x => x.Member.LastName)
+        RuleFor(x => x.LastName)
             .NotEmpty().WithMessage("Last name is required")
             .MaximumLength(100).WithMessage("Last name cannot exceed 100 characters");
 
-        RuleFor(x => x.Member.Email)
+        RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required")
             .EmailAddress().WithMessage("Invalid email format")
             .MaximumLength(200).WithMessage("Email cannot exceed 200 characters");
 
-        RuleFor(x => x.Member.PhoneNumber)
+        RuleFor(x => x.PhoneNumber)
             .MaximumLength(20).WithMessage("Phone number cannot exceed 20 characters")
-            .When(x => !string.IsNullOrEmpty(x.Member.PhoneNumber));
+            .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
     }
 }
 
@@ -45,19 +52,25 @@ public class CreateMemberCommandHandler : IRequestHandler<CreateMemberCommand, M
 
     public async Task<MemberDto> Handle(CreateMemberCommand request, CancellationToken cancellationToken)
     {
-        // Check for duplicate email
         var existingMember = await _unitOfWork.Members.FindAsync(
-            m => m.Email.ToLower() == request.Member.Email.ToLower(),
+            m => m.Email.ToLower() == request.Email.ToLower(),
             cancellationToken);
 
         if (existingMember.Any())
             throw new InvalidOperationException("A member with this email already exists");
 
-        var member = _mapper.Map<Member>(request.Member);
-        member.Id = Guid.NewGuid();
-        member.CreatedAt = DateTime.UtcNow;
-        member.MembershipDate = DateTime.UtcNow;
-        member.IsActive = true;
+        var member = new Member
+        {
+            Id = Guid.NewGuid(),
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
+            Address = request.Address,
+            MembershipDate = DateTime.UtcNow,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
 
         await _unitOfWork.Members.AddAsync(member, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

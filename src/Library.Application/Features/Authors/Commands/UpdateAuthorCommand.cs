@@ -6,14 +6,20 @@ using MediatR;
 
 namespace Library.Application.Features.Authors.Commands;
 
-public record UpdateAuthorCommand(Guid Id, UpdateAuthorDto Author) : IRequest<AuthorDto?>;
+public class UpdateAuthorCommand : IRequest<AuthorDto?>
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Biography { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+}
 
 public class UpdateAuthorCommandValidator : AbstractValidator<UpdateAuthorCommand>
 {
     public UpdateAuthorCommandValidator()
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Author ID is required");
-        RuleFor(x => x.Author.Name)
+        RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Author name is required")
             .MaximumLength(200).WithMessage("Name cannot exceed 200 characters");
     }
@@ -36,9 +42,9 @@ public class UpdateAuthorCommandHandler : IRequestHandler<UpdateAuthorCommand, A
         if (author == null)
             return null;
 
-        author.Name = request.Author.Name;
-        author.Biography = request.Author.Biography;
-        author.DateOfBirth = request.Author.DateOfBirth;
+        author.Name = request.Name;
+        author.Biography = request.Biography;
+        author.DateOfBirth = request.DateOfBirth;
         author.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Authors.UpdateAsync(author, cancellationToken);

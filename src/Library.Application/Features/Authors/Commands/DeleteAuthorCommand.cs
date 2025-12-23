@@ -3,7 +3,10 @@ using MediatR;
 
 namespace Library.Application.Features.Authors.Commands;
 
-public record DeleteAuthorCommand(Guid Id) : IRequest<bool>;
+public class DeleteAuthorCommand : IRequest<bool>
+{
+    public Guid Id { get; set; }
+}
 
 public class DeleteAuthorCommandHandler : IRequestHandler<DeleteAuthorCommand, bool>
 {
@@ -20,7 +23,6 @@ public class DeleteAuthorCommandHandler : IRequestHandler<DeleteAuthorCommand, b
         if (author == null)
             return false;
 
-        // Check if author has books
         var books = await _unitOfWork.Books.FindAsync(b => b.AuthorId == request.Id, cancellationToken);
         if (books.Any())
             throw new InvalidOperationException("Cannot delete an author with existing books");

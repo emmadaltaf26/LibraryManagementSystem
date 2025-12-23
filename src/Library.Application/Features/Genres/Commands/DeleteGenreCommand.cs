@@ -3,7 +3,10 @@ using MediatR;
 
 namespace Library.Application.Features.Genres.Commands;
 
-public record DeleteGenreCommand(Guid Id) : IRequest<bool>;
+public class DeleteGenreCommand : IRequest<bool>
+{
+    public Guid Id { get; set; }
+}
 
 public class DeleteGenreCommandHandler : IRequestHandler<DeleteGenreCommand, bool>
 {
@@ -20,7 +23,6 @@ public class DeleteGenreCommandHandler : IRequestHandler<DeleteGenreCommand, boo
         if (genre == null)
             return false;
 
-        // Check if genre has books
         var books = await _unitOfWork.Books.FindAsync(b => b.GenreId == request.Id, cancellationToken);
         if (books.Any())
             throw new InvalidOperationException("Cannot delete a genre with existing books");

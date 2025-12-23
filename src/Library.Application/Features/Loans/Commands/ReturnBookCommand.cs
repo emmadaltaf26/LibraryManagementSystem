@@ -6,7 +6,11 @@ using MediatR;
 
 namespace Library.Application.Features.Loans.Commands;
 
-public record ReturnBookCommand(Guid LoanId, ReturnBookDto? ReturnInfo = null) : IRequest<LoanDto?>;
+public class ReturnBookCommand : IRequest<LoanDto?>
+{
+    public Guid LoanId { get; set; }
+    public string? Notes { get; set; }
+}
 
 public class ReturnBookCommandHandler : IRequestHandler<ReturnBookCommand, LoanDto?>
 {
@@ -28,17 +32,15 @@ public class ReturnBookCommandHandler : IRequestHandler<ReturnBookCommand, LoanD
         if (loan.Status == LoanStatus.Returned)
             throw new InvalidOperationException("This book has already been returned");
 
-        // Update loan
         loan.ReturnDate = DateTime.UtcNow;
         loan.Status = LoanStatus.Returned;
         loan.UpdatedAt = DateTime.UtcNow;
 
-        if (request.ReturnInfo?.Notes != null)
+        if (request.Notes != null)
             loan.Notes = string.IsNullOrEmpty(loan.Notes)
-                ? request.ReturnInfo.Notes
-                : $"{loan.Notes}; {request.ReturnInfo.Notes}";
+                ? request.Notes
+                : $"{loan.Notes}; {request.Notes}";
 
-        // Update book availability
         var book = await _unitOfWork.Books.GetByIdAsync(loan.BookId, cancellationToken);
         if (book != null)
         {

@@ -5,7 +5,10 @@ using MediatR;
 
 namespace Library.Application.Features.Members.Queries;
 
-public record GetMemberByIdQuery(Guid Id) : IRequest<MemberDto?>;
+public class GetMemberByIdQuery : IRequest<MemberDto?>
+{
+    public Guid Id { get; set; }
+}
 
 public class GetMemberByIdQueryHandler : IRequestHandler<GetMemberByIdQuery, MemberDto?>
 {

@@ -7,13 +7,17 @@ using MediatR;
 
 namespace Library.Application.Features.Genres.Commands;
 
-public record CreateGenreCommand(CreateGenreDto Genre) : IRequest<GenreDto>;
+public class CreateGenreCommand : IRequest<GenreDto>
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+}
 
 public class CreateGenreCommandValidator : AbstractValidator<CreateGenreCommand>
 {
     public CreateGenreCommandValidator()
     {
-        RuleFor(x => x.Genre.Name)
+        RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Genre name is required")
             .MaximumLength(100).WithMessage("Name cannot exceed 100 characters");
     }
@@ -32,9 +36,13 @@ public class CreateGenreCommandHandler : IRequestHandler<CreateGenreCommand, Gen
 
     public async Task<GenreDto> Handle(CreateGenreCommand request, CancellationToken cancellationToken)
     {
-        var genre = _mapper.Map<Genre>(request.Genre);
-        genre.Id = Guid.NewGuid();
-        genre.CreatedAt = DateTime.UtcNow;
+        var genre = new Genre
+        {
+            Id = Guid.NewGuid(),
+            Name = request.Name,
+            Description = request.Description,
+            CreatedAt = DateTime.UtcNow
+        };
 
         await _unitOfWork.Genres.AddAsync(genre, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

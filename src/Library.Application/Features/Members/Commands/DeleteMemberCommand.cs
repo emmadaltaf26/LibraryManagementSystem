@@ -4,7 +4,10 @@ using MediatR;
 
 namespace Library.Application.Features.Members.Commands;
 
-public record DeleteMemberCommand(Guid Id) : IRequest<bool>;
+public class DeleteMemberCommand : IRequest<bool>
+{
+    public Guid Id { get; set; }
+}
 
 public class DeleteMemberCommandHandler : IRequestHandler<DeleteMemberCommand, bool>
 {
@@ -21,7 +24,6 @@ public class DeleteMemberCommandHandler : IRequestHandler<DeleteMemberCommand, b
         if (member == null)
             return false;
 
-        // Check if member has active loans
         var activeLoans = await _unitOfWork.Loans.FindAsync(
             l => l.MemberId == request.Id && l.Status == LoanStatus.Active,
             cancellationToken);

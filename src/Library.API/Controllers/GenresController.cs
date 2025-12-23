@@ -1,4 +1,3 @@
-using Library.Application.DTOs;
 using Library.Application.Features.Genres.Commands;
 using Library.Application.Features.Genres.Queries;
 using MediatR;
@@ -6,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers;
 
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class GenresController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -18,46 +17,48 @@ public class GenresController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GenreDto>>> GetAll()
+    public async Task<IActionResult> Get()
     {
-        var genres = await _mediator.Send(new GetAllGenresQuery());
-        return Ok(genres);
+        var response = await _mediator.Send(new GetAllGenresQuery());
+        return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<GenreDto>> GetById(Guid id)
+    [HttpGet]
+    [Route("{id}")]
+    public async Task<IActionResult> Get([FromRoute] Guid id)
     {
-        var genre = await _mediator.Send(new GetGenreByIdQuery(id));
-        if (genre == null)
-            return NotFound();
+        var response = await _mediator.Send(new GetGenreByIdQuery { Id = id });
+        if (response == null)
+            return NotFound(new { Message = "Genre not found." });
 
-        return Ok(genre);
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<GenreDto>> Create([FromBody] CreateGenreDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateGenreCommand command)
     {
-        var genre = await _mediator.Send(new CreateGenreCommand(dto));
-        return CreatedAtAction(nameof(GetById), new { id = genre.Id }, genre);
+        var response = await _mediator.Send(command);
+        return Ok(response);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<GenreDto>> Update(Guid id, [FromBody] UpdateGenreDto dto)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateGenreCommand command)
     {
-        var genre = await _mediator.Send(new UpdateGenreCommand(id, dto));
-        if (genre == null)
-            return NotFound();
+        var response = await _mediator.Send(command);
+        if (response == null)
+            return NotFound(new { Message = "Genre not found." });
 
-        return Ok(genre);
+        return Ok(response);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete]
+    [Route("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var result = await _mediator.Send(new DeleteGenreCommand(id));
+        var result = await _mediator.Send(new DeleteGenreCommand { Id = id });
         if (!result)
-            return NotFound();
+            return NotFound(new { Message = "Genre not found." });
 
-        return NoContent();
+        return Ok(new { Message = "Genre deleted successfully." });
     }
 }

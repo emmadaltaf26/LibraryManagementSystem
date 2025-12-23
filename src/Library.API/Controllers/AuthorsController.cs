@@ -1,4 +1,3 @@
-using Library.Application.DTOs;
 using Library.Application.Features.Authors.Commands;
 using Library.Application.Features.Authors.Queries;
 using MediatR;
@@ -6,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers;
 
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class AuthorsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -18,46 +17,48 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAll()
+    public async Task<IActionResult> Get()
     {
-        var authors = await _mediator.Send(new GetAllAuthorsQuery());
-        return Ok(authors);
+        var response = await _mediator.Send(new GetAllAuthorsQuery());
+        return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<AuthorDto>> GetById(Guid id)
+    [HttpGet]
+    [Route("{id}")]
+    public async Task<IActionResult> Get([FromRoute] Guid id)
     {
-        var author = await _mediator.Send(new GetAuthorByIdQuery(id));
-        if (author == null)
-            return NotFound();
+        var response = await _mediator.Send(new GetAuthorByIdQuery { Id = id });
+        if (response == null)
+            return NotFound(new { Message = "Author not found." });
 
-        return Ok(author);
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<AuthorDto>> Create([FromBody] CreateAuthorDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateAuthorCommand command)
     {
-        var author = await _mediator.Send(new CreateAuthorCommand(dto));
-        return CreatedAtAction(nameof(GetById), new { id = author.Id }, author);
+        var response = await _mediator.Send(command);
+        return Ok(response);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<AuthorDto>> Update(Guid id, [FromBody] UpdateAuthorDto dto)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateAuthorCommand command)
     {
-        var author = await _mediator.Send(new UpdateAuthorCommand(id, dto));
-        if (author == null)
-            return NotFound();
+        var response = await _mediator.Send(command);
+        if (response == null)
+            return NotFound(new { Message = "Author not found." });
 
-        return Ok(author);
+        return Ok(response);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete]
+    [Route("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var result = await _mediator.Send(new DeleteAuthorCommand(id));
+        var result = await _mediator.Send(new DeleteAuthorCommand { Id = id });
         if (!result)
-            return NotFound();
+            return NotFound(new { Message = "Author not found." });
 
-        return NoContent();
+        return Ok(new { Message = "Author deleted successfully." });
     }
 }
