@@ -1,0 +1,37 @@
+using Library.Application.Common.Interfaces;
+using Library.Domain.Enums;
+using MediatR;
+
+namespace Library.Application.Features.Members.Commands;
+
+public record DeleteMemberCommand(Guid Id) : IRequest<bool>;
+
+public class DeleteMemberCommandHandler : IRequestHandler<DeleteMemberCommand, bool>
+{
+    private readonly IUnitOfWork _unitOfWork;
+
+    public DeleteMemberCommandHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<bool> Handle(DeleteMemberCommand request, CancellationToken cancellationToken)
+    {
+        var member = await _unitOfWork.Members.GetByIdAsync(request.Id, cancellationToken);
+        if (member == null)
+            return false;
+
+        // Check if member has active loans
+        var activeLoans = await _unitOfWork.Loans.FindAsync(
+            l => l.MemberId == request.Id && l.Status == LoanStatus.Active,
+            cancellationToken);
+
+        if (activeLoans.Any())
+            throw new InvalidOperationException("Cannot delete a member with active loans");
+
+        await _unitOfWork.Members.DeleteAsync(member, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+}
