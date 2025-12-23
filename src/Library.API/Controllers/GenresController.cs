@@ -17,9 +17,6 @@ public class GenresController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get all genres
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GenreDto>>> GetAll()
     {
@@ -27,9 +24,6 @@ public class GenresController : ControllerBase
         return Ok(genres);
     }
 
-    /// <summary>
-    /// Get a genre by ID
-    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<GenreDto>> GetById(Guid id)
     {
@@ -40,9 +34,6 @@ public class GenresController : ControllerBase
         return Ok(genre);
     }
 
-    /// <summary>
-    /// Create a new genre
-    /// </summary>
     [HttpPost]
     public async Task<ActionResult<GenreDto>> Create([FromBody] CreateGenreDto dto)
     {
@@ -50,9 +41,6 @@ public class GenresController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = genre.Id }, genre);
     }
 
-    /// <summary>
-    /// Update an existing genre
-    /// </summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<GenreDto>> Update(Guid id, [FromBody] UpdateGenreDto dto)
     {
@@ -63,9 +51,6 @@ public class GenresController : ControllerBase
         return Ok(genre);
     }
 
-    /// <summary>
-    /// Delete a genre
-    /// </summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {

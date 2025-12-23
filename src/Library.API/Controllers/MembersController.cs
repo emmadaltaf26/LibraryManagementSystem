@@ -17,9 +17,6 @@ public class MembersController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get all members
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetAll()
     {
@@ -27,9 +24,6 @@ public class MembersController : ControllerBase
         return Ok(members);
     }
 
-    /// <summary>
-    /// Get a member by ID
-    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<MemberDto>> GetById(Guid id)
     {
@@ -40,9 +34,6 @@ public class MembersController : ControllerBase
         return Ok(member);
     }
 
-    /// <summary>
-    /// Create a new member
-    /// </summary>
     [HttpPost]
     public async Task<ActionResult<MemberDto>> Create([FromBody] CreateMemberDto dto)
     {
@@ -50,9 +41,6 @@ public class MembersController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = member.Id }, member);
     }
 
-    /// <summary>
-    /// Update an existing member
-    /// </summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<MemberDto>> Update(Guid id, [FromBody] UpdateMemberDto dto)
     {
@@ -63,9 +51,6 @@ public class MembersController : ControllerBase
         return Ok(member);
     }
 
-    /// <summary>
-    /// Delete a member
-    /// </summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {

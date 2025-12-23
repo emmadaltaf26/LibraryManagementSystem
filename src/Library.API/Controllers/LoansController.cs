@@ -17,9 +17,6 @@ public class LoansController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get all loans
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<LoanDto>>> GetAll()
     {
@@ -27,9 +24,6 @@ public class LoansController : ControllerBase
         return Ok(loans);
     }
 
-    /// <summary>
-    /// Get a loan by ID
-    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<LoanDto>> GetById(Guid id)
     {
@@ -40,9 +34,6 @@ public class LoansController : ControllerBase
         return Ok(loan);
     }
 
-    /// <summary>
-    /// Get loans by member ID
-    /// </summary>
     [HttpGet("member/{memberId:guid}")]
     public async Task<ActionResult<IEnumerable<LoanDto>>> GetByMember(Guid memberId)
     {
@@ -50,9 +41,6 @@ public class LoansController : ControllerBase
         return Ok(loans);
     }
 
-    /// <summary>
-    /// Get all overdue loans
-    /// </summary>
     [HttpGet("overdue")]
     public async Task<ActionResult<IEnumerable<LoanDto>>> GetOverdue()
     {
@@ -60,9 +48,6 @@ public class LoansController : ControllerBase
         return Ok(loans);
     }
 
-    /// <summary>
-    /// Borrow a book
-    /// </summary>
     [HttpPost("borrow")]
     public async Task<ActionResult<LoanDto>> BorrowBook([FromBody] BorrowBookDto dto)
     {
@@ -70,9 +55,6 @@ public class LoansController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = loan.Id }, loan);
     }
 
-    /// <summary>
-    /// Return a book
-    /// </summary>
     [HttpPost("{id:guid}/return")]
     public async Task<ActionResult<LoanDto>> ReturnBook(Guid id, [FromBody] ReturnBookDto? dto = null)
     {

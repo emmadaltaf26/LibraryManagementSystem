@@ -17,9 +17,6 @@ public class AuthorsController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get all authors
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAll()
     {
@@ -27,9 +24,6 @@ public class AuthorsController : ControllerBase
         return Ok(authors);
     }
 
-    /// <summary>
-    /// Get an author by ID
-    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<AuthorDto>> GetById(Guid id)
     {
@@ -40,9 +34,6 @@ public class AuthorsController : ControllerBase
         return Ok(author);
     }
 
-    /// <summary>
-    /// Create a new author
-    /// </summary>
     [HttpPost]
     public async Task<ActionResult<AuthorDto>> Create([FromBody] CreateAuthorDto dto)
     {
@@ -50,9 +41,6 @@ public class AuthorsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = author.Id }, author);
     }
 
-    /// <summary>
-    /// Update an existing author
-    /// </summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<AuthorDto>> Update(Guid id, [FromBody] UpdateAuthorDto dto)
     {
@@ -63,9 +51,6 @@ public class AuthorsController : ControllerBase
         return Ok(author);
     }
 
-    /// <summary>
-    /// Delete an author
-    /// </summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {

@@ -17,9 +17,6 @@ public class BooksController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get all books
-    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
     {
@@ -27,9 +24,6 @@ public class BooksController : ControllerBase
         return Ok(books);
     }
 
-    /// <summary>
-    /// Get a book by ID
-    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<BookDto>> GetById(Guid id)
     {
@@ -40,9 +34,6 @@ public class BooksController : ControllerBase
         return Ok(book);
     }
 
-    /// <summary>
-    /// Create a new book
-    /// </summary>
     [HttpPost]
     public async Task<ActionResult<BookDto>> Create([FromBody] CreateBookDto dto)
     {
@@ -50,9 +41,6 @@ public class BooksController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
     }
 
-    /// <summary>
-    /// Update an existing book
-    /// </summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<BookDto>> Update(Guid id, [FromBody] UpdateBookDto dto)
     {
@@ -63,9 +51,6 @@ public class BooksController : ControllerBase
         return Ok(book);
     }
 
-    /// <summary>
-    /// Delete a book
-    /// </summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {

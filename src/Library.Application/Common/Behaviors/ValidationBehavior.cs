@@ -3,9 +3,6 @@ using MediatR;
 
 namespace Library.Application.Common.Behaviors;
 
-/// <summary>
-/// MediatR pipeline behavior for automatic validation
-/// </summary>
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {

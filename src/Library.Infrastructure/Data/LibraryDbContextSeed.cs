@@ -4,22 +4,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Library.Infrastructure.Data;
 
-/// <summary>
-/// Seeds initial data into the database
-/// </summary>
 public static class LibraryDbContextSeed
 {
     public static async Task SeedAsync(LibraryDbContext context, ILogger logger)
     {
         try
         {
-            // Apply pending migrations
             if (context.Database.IsSqlServer())
             {
                 await context.Database.MigrateAsync();
             }
 
-            // Seed Genres if none exist
             if (!await context.Genres.AnyAsync())
             {
                 var genres = GetPreconfiguredGenres();
@@ -28,7 +23,6 @@ public static class LibraryDbContextSeed
                 logger.LogInformation("Seeded {Count} genres", genres.Count);
             }
 
-            // Seed Authors if none exist
             if (!await context.Authors.AnyAsync())
             {
                 var authors = GetPreconfiguredAuthors();
@@ -37,7 +31,6 @@ public static class LibraryDbContextSeed
                 logger.LogInformation("Seeded {Count} authors", authors.Count);
             }
 
-            // Seed Books if none exist
             if (!await context.Books.AnyAsync())
             {
                 var genres = await context.Genres.ToListAsync();
@@ -48,7 +41,6 @@ public static class LibraryDbContextSeed
                 logger.LogInformation("Seeded {Count} books", books.Count);
             }
 
-            // Seed Members if none exist
             if (!await context.Members.AnyAsync())
             {
                 var members = GetPreconfiguredMembers();
