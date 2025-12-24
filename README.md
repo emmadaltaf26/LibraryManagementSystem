@@ -106,7 +106,7 @@ dotnet run
 
 Or press F5 in Visual Studio.
 
-The API will be available at: `https://localhost:7xxx` or `http://localhost:5xxx`
+The API will be available at: `https://localhost:7121` or `http://localhost:5175`
 
 Swagger UI will open automatically for API testing.
 
@@ -170,7 +170,8 @@ Swagger UI will open automatically for API testing.
 POST /api/authors
 {
   "name": "George Orwell",
-  "biography": "English novelist and essayist"
+  "biography": "English novelist and essayist",
+  "dateOfBirth": "1903-06-25"
 }
 ```
 
@@ -192,8 +193,8 @@ POST /api/books
   "description": "Dystopian social science fiction novel",
   "publishedYear": 1949,
   "totalCopies": 5,
-  "authorId": "author-guid-here",
-  "genreId": "genre-guid-here"
+  "authorId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "genreId": "3fa85f64-5717-4562-b3fc-2c963f66afa7"
 }
 ```
 
@@ -213,17 +214,18 @@ POST /api/members
 ```json
 POST /api/loans/borrow
 {
-  "bookId": "book-guid-here",
-  "memberId": "member-guid-here",
-  "dueDate": "2025-01-15"
+  "bookId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "memberId": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
+  "loanDays": 14,
+  "notes": "First time borrower"
 }
 ```
 
 ### Return a Book
 ```json
-POST /api/loans/{loanId}/return
+POST /api/loans/{id}/return
 {
-  "loanId": "loan-guid-here"
+  "notes": "Returned in good condition"
 }
 ```
 
