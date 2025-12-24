@@ -55,9 +55,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection ConfigureDbContexts(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<LibraryDbContext>(options =>
-            options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly(typeof(LibraryDbContext).Assembly.FullName)));
+            options.UseSqlServer(configuration.GetConnectionString("LibraryDbConnection")));
         return services;
     }
 
