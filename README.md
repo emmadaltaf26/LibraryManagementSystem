@@ -62,53 +62,19 @@ LibraryManagementSystem/
 - SQL Server (LocalDB or SQL Server Express)
 - Visual Studio 2022 or VS Code
 
-## Setup Instructions
+## Quick Start
 
-### 1. Clone the Repository
+1. Clone the repository
+2. Open `LibraryManagementSystem.sln` in Visual Studio
+3. Update connection string in `src/Library.API/appsettings.json`
+4. Run database migration:
+   ```powershell
+   Update-Database -Project Library.Infrastructure -StartupProject Library.API -Context LibraryDbContext
+   ```
+5. Press F5 to run the application
+6. Swagger UI opens at: `https://localhost:7121`
 
-```bash
-git clone <repository-url>
-cd LibraryManagementSystem
-```
-
-### 2. Configure Connection String
-
-Update the connection string in `src/Library.API/appsettings.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "LibraryDbConnection": "Server=localhost;Initial Catalog=LibraryManagementDb;Integrated Security=True;TrustServerCertificate=True"
-  }
-}
-```
-
-### 3. Run Database Migrations
-
-Open Package Manager Console in Visual Studio and run:
-
-```powershell
-Update-Database -Project Library.Infrastructure -StartupProject Library.API -Context LibraryDbContext
-```
-
-Or using .NET CLI:
-
-```bash
-dotnet ef database update --project src/Library.Infrastructure --startup-project src/Library.API --context LibraryDbContext
-```
-
-### 4. Run the Application
-
-```bash
-cd src/Library.API
-dotnet run
-```
-
-Or press F5 in Visual Studio.
-
-The API will be available at: `https://localhost:7121` or `http://localhost:5175`
-
-Swagger UI will open automatically for API testing.
+**For detailed setup instructions, see [INSTRUCTIONS.md](INSTRUCTIONS.md)**
 
 ## API Endpoints
 
