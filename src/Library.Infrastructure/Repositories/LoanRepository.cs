@@ -4,9 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Repositories;
 
-/// <summary>
-/// Loan repository with eager loading of navigation properties
-/// </summary>
 public class LoanRepository : Repository<Loan>
 {
     public LoanRepository(LibraryDbContext context) : base(context)

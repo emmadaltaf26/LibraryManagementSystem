@@ -3,9 +3,6 @@ using Library.Domain.Common;
 
 namespace Library.Application.Common.Interfaces;
 
-/// <summary>
-/// Generic repository interface for data access operations
-/// </summary>
 public interface IRepository<T> where T : BaseEntity
 {
     Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);

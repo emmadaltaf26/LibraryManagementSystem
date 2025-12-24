@@ -1,5 +1,5 @@
-using Library.Application.Features.Loans.Commands;
-using Library.Application.Features.Loans.Queries;
+using Library.API.Application.Commands;
+using Library.API.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

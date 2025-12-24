@@ -1,5 +1,5 @@
 using FluentValidation;
-using Library.Application.Common.Behaviors;
+using Library.API.Application.Behaviours;
 using Library.Application.Common.Interfaces;
 using Library.Infrastructure.Data;
 using Library.Infrastructure.Repositories;
