@@ -1,5 +1,4 @@
-using Library.Application;
-using Library.Infrastructure;
+using Library.API.Infrastructure.Extensions;
 using Library.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -14,25 +13,15 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "Library Management System API",
-        Version = "v1",
-        Description = "A .NET 9.0 Web API for Library Management using Clean Architecture, CQRS, and Entity Framework Core",
-        Contact = new Microsoft.OpenApi.Models.OpenApiContact
-        {
-            Name = "Emmad Altaf",
-            Email = "emmadaltaf26@gmail.com"
-        }
-    });
-});
+builder.Services
+    .ConfigureServices()
+    .ConfigureRepositories()
+    .ConfigureMediatR()
+    .ConfigureSwagger()
+    .ConfigureAutoMapper()
+    .ConfigureDbContexts(builder.Configuration);
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
